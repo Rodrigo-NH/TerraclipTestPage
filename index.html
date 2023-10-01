@@ -1,73 +1,230 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Upload with AJAX</title>
-    <style>
-        /* Add your CSS styling here */
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 100px;
+<html>
+   <head>
+      <title>TERRACLIP</title>
+      <style>
+         body {
+         margin: 0;
+         padding: 0;
+         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+         color: #444;
+         background-color: #f0f0f5;
+         }
+         header {
+         background-color: #e6ccb3;
+         overflow: auto;
+         opacity: .9;
+         margin-bottom: 5px;
+         padding: 5px;
+         }
+         .inputb {
+         font-size: 10px;
+         width: 50px;
+         border:none;
+         }
+         .inputc {
+         font-size: 10px;
+         width: 200px;
+         height: 20px;
+         text-align: left;
+         }
+         .container {
+         overflow: auto;
+         width: 1300px;
+         margin: 0 auto;
+         }
+         .optcont {
+         margin: 0 auto;
+         margin: 0 auto;
+         display: inline-grid;
+         grid-template-columns: auto auto;
+         //border:dotted;
+         }
+         .optcont2 {
+         padding: 3px;
+         text-align: left;
+         margin-left: 35px;
+         font-size: 17px;
+         overflow: auto;
+         font-family: "Times New Roman", Times, serif;
+         }
+         header h1.logo {
+         margin: 5px;
+         font-size: 1.7em;
+         color: #fff;
+         text-transform: uppercase;
+         float: left;
+         }
+         #upload-btn {
+         //padding: 30px 50px;
+         background-color: #3498db;
+         color: #fff;
+         border: none;
+         cursor: pointer;
+         }
+         #proc-btn {
+         //padding: 30px 50px;
+         background-color: #3498db;
+         color: #fff;
+         border: none;
+         cursor: pointer;
+         }
+         #file-input {
+         display: none;
+         }
+         #params {
+            all: unset !important;
+               }
+      </style>
+      <script>
+         document.cookie = "userId=John Doe; SameSite=None; Secure";
+
+      </script>
+   </head>
+   <body>
+      <header>
+         <div class="container">
+            <h1 class="logo">TERRACLIP</h1>
+            <div class="optcont">
+               <div class="optcont2">
+                  1
+               </div>
+               <p></p>
+               <div class="optcont2" style="text-align: left">Upload input file (KML/KMZ, SHP, GPKG)</div>
+               <p></p>
+
+                <div class="optcont2">
+               <button id="upload-btn" style="width: 120px;">Choose a File</button>
+               <input type="file" id="file-input">
+                    <div id="result"></div>
+                </div>
+
+
+               <p></p>
+
+               <!--                 <input class="inputc" type="file" name="file" id="fileToUpload"><p></p>-->
+               <!--                 <input id="upload-btn" class="inputc" type="submit" value="upload" name="submit1" style="width: 60px;">-->
+            </div>
+
+         <form id="params">
+
+            <div class="optcont">
+               <div class="optcont2">
+                  2
+               </div>
+               <p></p>
+               <div class="optcont2">
+                  Enter flight ALT (Above ground):.......
+                  <input class="inputb" type="number" name="flightalt"  value="120">
+               </div>
+               <p></p>
+               <div class="optcont2">
+                  Enter tolerance (%):.............................
+                  <input class="inputb" type="number" name="tolerance" min="0" max="100" value="5">
+               </div>
+               <p></p>
+               <div class="optcont2">
+                  Enter desired distance between WPs:..
+                  <input class="inputb" type="number" name="wpdistance"  value="500">
+               </div>
+               <p></p>
+               <div class="optcont2">
+                  Generate Delta height WPs:.................
+                  <select class="inputb" name="deltaheight">
+                     <option value="Yes">Yes</option>
+                     <option value="No">No</option>
+                  </select>
+               </div>
+            </div>
+            <div class="optcont">
+               <div class="optcont2">
+                  3
+               </div>
+               <p></p>
+
+               <div class="optcont2">
+                  <p></p>
+<!--                  <input id="proc-btn" class="inputc" type="submit" value="Proccess" name="submit2" style="width: 60px;">-->
+                  <input id="proc-btn" type="button" value="Proccess" style="width: 60px;" onclick="submitForm()">
+               </div>
+            </div>
+
+         </form>
+
+
+         </div>
+         </div>
+      </header>
+      <div class="container">
+         COntainer
+      </div>
+   </body>
+   <script>
+      const uploadButton = document.getElementById('upload-btn');
+      const fileInput = document.getElementById('file-input');
+      const resultDiv = document.getElementById('result');
+
+      uploadButton.addEventListener('click', () => {
+          fileInput.click();
+      });
+
+      fileInput.addEventListener('change', () => {
+          const file = fileInput.files[0];
+          if (file) {
+              const formData = new FormData();
+              formData.append('file', file);
+
+              // Create an XMLHttpRequest object
+              const xhr = new XMLHttpRequest();
+
+              // Define the request type, URL, and async flag
+              xhr.open('POST', 'https://minasambiente.com.br/terraclip', true);
+
+              // Set up the onload and onerror event handlers
+              xhr.onload = function () {
+                  if (xhr.status === 200) {
+                      resultDiv.innerHTML = 'File uploaded successfully.';
+                  } else {
+                      resultDiv.innerHTML = xhr.status;
+                  }
+              };
+
+              xhr.onerror = function () {
+                  resultDiv.innerHTML = 'An error occurred during the upload.';
+              };
+
+              // Send the FormData with the file
+              xhr.send(formData);
+          }
+      });
+
+          function submitForm() {
+            var form = document.getElementById("params");
+            var formData = new FormData(form);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "https://minasambiente.com.br/terraclip", true);
+            //xhr.responseType = 'blob';
+
+               xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    // Handle the response from the server
+                    console.log(xhr.responseText);
+                    missionfile = "https://minasambiente.com.br/terraclip/output/" + xhr.responseText;
+                    window.location.href = missionfile;
+
+                    //window.location.href = "https://minasambiente.com.br/terraclip/output/1695792333-55852.zip";
+                }
+            };
+
+
+            // Set the appropriate headers if needed
+            // xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+            // Send the FormData
+            xhr.send(formData);
         }
-        #upload-btn {
-            padding: 10px 20px;
-            background-color: #3498db;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-        }
-        #file-input {
-            display: none;
-        }
-    </style>
-</head>
-<body>
-    <h1>File Upload with AJAX</h1>
-    <button id="upload-btn">Choose a File</button>
-    <input type="file" id="file-input">
-    <div id="result"></div>
 
-    <script>
-        const uploadButton = document.getElementById('upload-btn');
-        const fileInput = document.getElementById('file-input');
-        const resultDiv = document.getElementById('result');
 
-        uploadButton.addEventListener('click', () => {
-            fileInput.click();
-        });
-
-        fileInput.addEventListener('change', () => {
-            const file = fileInput.files[0];
-            if (file) {
-                const formData = new FormData();
-                formData.append('file', file);
-
-                // Create an XMLHttpRequest object
-                const xhr = new XMLHttpRequest();
-
-                // Define the request type, URL, and async flag
-                xhr.open('POST', 'https://seguro.minasambiente.com.br/img2css', true);
-
-                // Set up the onload and onerror event handlers
-                xhr.onload = function () {
-                    if (xhr.status === 200) {
-                        resultDiv.innerHTML = 'File uploaded successfully.';
-                    } else {
-                        resultDiv.innerHTML = xhr.status;
-                    }
-                };
-
-                xhr.onerror = function () {
-                    resultDiv.innerHTML = 'An error occurred during the upload.';
-                };
-
-                // Send the FormData with the file
-                xhr.send(formData);
-            }
-        });
-    </script>
-	<button onclick="window.location.href = 'https://seguro.minasambiente.com.br/img2css/output/1695792333-55852.zip';">HOME</button>
-</body>
+   </script>
 </html>
