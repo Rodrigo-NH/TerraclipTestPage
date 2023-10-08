@@ -15,7 +15,7 @@
    left: 0;
    top: 0;
    z-index: 1 /* choose a z-index so that no other element can overlap it */
-   background: rgba(25,25,25, .8);
+   background: rgba(25,25,25, 0);
    }
    header {
    background-color: #e6ccb3;
@@ -138,7 +138,7 @@
       </div>
       <div  id="waittext" class="lds-hourglass" style="position: absolute; margin-top: 30%; left: 50%;z-index: 1;text-align: center;">
          <div style="position: relative; left: -50%; ">
-            <h3 id="statusmsg" style="">Centered aasdasdasdsligned div</h3>
+            <h3 id="statusmsg" style="color:red">Centered aasdasdasdsligned div</h3>
          </div>
       </div>
       <header>
@@ -152,7 +152,7 @@
                <div class="optcont2" style="text-align: left">Upload input file (KML/KMZ, SHP, GPKG)</div>
                <p></p>
                <div class="optcont2">
-                  <button id="upload-btn" style="width: 120px;">Choose a File</button>
+                  <button id="upload-btn" style="width: 160px;">Choose a File</button>
                   <input type="file" id="file-input">
                   <div id="result"></div>
                </div>
@@ -165,22 +165,22 @@
                   </div>
                   <p></p>
                   <div class="optcont2">
-                     Enter flight ALT (Above ground):.......
+                     Enter flight ALT(m) (Above ground):.......
                      <input class="inputb" type="number" name="flightalt"  value="120">
                   </div>
                   <p></p>
                   <div class="optcont2">
-                     Enter tolerance (%):.............................
+                     Enter tolerance (%):...................................
                      <input class="inputb" type="number" name="tolerance" min="0" max="100" value="0">
                   </div>
                   <p></p>
                   <div class="optcont2">
-                     Enter max distance between WPs:.......
+                     Enter max distance between WPs(m):.......
                      <input class="inputb" type="number" name="wpdistance"  value="500">
                   </div>
                   <p></p>
                   <div class="optcont2">
-                     Insert Takeoff command:......................
+                     Insert Takeoff command:............................
                      <select class="inputb" name="takeoff">
                         <option value="No">No</option>
                         <option value="Yes">Yes</option>
@@ -188,7 +188,7 @@
                   </div>
                   <p></p>
                   <div class="optcont2">
-                     Insert Land command:..........................
+                     Insert Land command:................................
                      <select class="inputb" name="land">
                         <option value="No">No</option>
                         <option value="Yes">Yes</option>
@@ -203,7 +203,7 @@
                   <div class="optcont2">
                      <p></p>
                      <!--                  <input id="proc-btn" class="inputc" type="submit" value="Proccess" name="submit2" style="width: 60px;">-->
-                     <input id="proc-btn" type="button" value="Proccess" style="width: 60px;" onclick="submitForm()">
+                     <input id="proc-btn" type="button" disabled value="Proccess" style="width: 100px;" onclick="submitForm()">
                   </div>
                </div>
             </form>
@@ -211,7 +211,33 @@
          </div>
       </header>
       <div class="container">
-         COntainer
+         <!--                              README                  -->
+         <p>Generate Ardupilot mission files and auxiliary files (Stats file and export files).
+            The output mission file contains WP&#39;s set to &#39;ABSOLUTE&#39; heights for better mission previsibility and can be imported directly in Mission Planner.
+         </p>
+         <h2 id="beta-and-use-at-your-own-risk-">Beta (and use at your own risk)</h2>
+         <ul>
+            <li>
+               GitHub project: <a href="https://github.com/Rodrigo-NH/Terraclip">https://github.com/Rodrigo-NH/Terraclip</a>
+               <h2 id="how-it-works">How it works</h2>
+            </li>
+            <li>Draw a path in GoogleEarth containing desired flight path. Export the path to a KML/KMZ file. Generated mission will respect the vertices from your path, converting vertices to WP&#39;s.  </li>
+            <li>Upload your KMZ/KML file (or shapefile or geopackage or GDAL&#39;s driver ready file)</li>
+            <li>Set parameters  </li>
+            <li>Hit &#39;process&#39; button</li>
+            <li>Your browser will download a ZIP file containing Ardupilot mission file; a Stats file and a KML 3D reference file     </li>
+            <li>The total area envelope of your input file should not exceed 400km<sup>2</sup> (server constraints)</li>
+            <li>It will take some seconds (~10s) until you get the file downloaded the first time you hit &#39;process&#39; button. Script is downloading necessary DEM from Open Topography (<a href="https://opentopography.org/">https://opentopography.org/</a>). This is usually the querying time there.</li>
+            <li>
+               <p>you can change parameters and hit &#39;process&#39; again (and again) after first interaction. Script will use a buffered version of necessary DEM until you upload a new file or hit browser refresh.    </p>
+               <p><code>&lt;flight ALT&gt;</code> =&gt; Flight altitude above ground. This will be the minimal altitude to be respected along all path<br><code>&lt;Tolerance&gt;</code> =&gt; Flight altitude tolerance (in %). Means Minimal altitude along path can reach <code>&lt;flightAlt&gt;</code> minus tolerance<br><code>&lt;Max Distance Between WPs&gt;</code> =&gt; Divide your original WP&#39;s into sections (creating another WP&#39;s), respecting this max distance between WP&#39;s. The lower this parameter the more a &#39;terrain following&#39; effect. Set this to zero to not create any aditional WP&#39;s.<br><code>Takeoff</code> =&gt; Optional. Converts the first WP&#39;s from your file into Takeoff command<br><code>Land</code> =&gt; Optional. Converts the last WP from your file into Land command.</p>
+               <h2 id="features">Features</h2>
+            </li>
+            <li>Anti-collision check, guarantees minimal altitude above ground along all flight path</li>
+            <li>Doesn&#39;t care about your vector/DEM input files DATUM/CRS, converts accordingly</li>
+            <li>Outputs a stat file containing minimal flight altitude, max flight altitude, max generated inclination and suggested RTL_ALT (max DEM scene altitude plus <code>&lt;flightAlt&gt;</code>)</li>
+         </ul>
+         <!--                              README                  -->
       </div>
    </body>
    <script>
@@ -259,9 +285,10 @@
               xhr.onload = function () {
                   if (xhr.status === 200) {
                         disablewait();
+                        document.querySelector('#proc-btn').disabled = true;
                       resultDiv.innerHTML = 'File uploaded successfully.';
                       window.basename = xhr.responseText;
-                      console.log(basename);
+                      document.querySelector('#proc-btn').disabled = false;
                   } else {
                       resultDiv.innerHTML = xhr.status;
                   }
@@ -294,22 +321,22 @@
                 if (xhr.readyState == 4 && xhr.status == 200) {
                      disablewait();
                     // Handle the response from the server
-                    console.log(xhr.responseText);
-                    missionfile = terraclipserver + "/output/" + xhr.responseText;
+                    msg = xhr.responseText
+                    if (msg === 'areaexceeded') {
+                        window.alert("Total input area greater than 400km2. Please load a different file.");
+                    }
+                    else {
+                    missionfile = terraclipserver + "/output/" + msg;
                     window.location.href = missionfile;
-
-                    //window.location.href = "https://minasambiente.com.br/terraclip/output/1695792333-55852.zip";
+                    }
                 }
             };
-
-
             // Set the appropriate headers if needed
             // xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-
             // Send the FormData
             xhr.send(formData);
         }
-
         disablewait();
+        document.querySelector('#proc-btn').disabled = true;
    </script>
 </html>
