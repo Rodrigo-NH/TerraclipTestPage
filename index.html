@@ -127,8 +127,8 @@
    <head class="disabled">
       <title>TERRACLIP</title>
       <script>
-         //terraclipserver = "http://127.0.0.1:5000/terraclip"
-         terraclipserver = "https://minasambiente.com.br/terraclip"
+         terraclipserver = "http://127.0.0.1:5000/terraclip"
+         //terraclipserver = "https://minasambiente.com.br/terraclip"
       </script>
    </head>
    <body>
@@ -138,7 +138,7 @@
       </div>
       <div  id="waittext" class="lds-hourglass" style="position: absolute; margin-top: 30%; left: 50%;z-index: 1;text-align: center;">
          <div style="position: relative; left: -50%; ">
-            <h3 id="statusmsg" style="color:red">Centered aasdasdasdsligned div</h3>
+            <h3 id="statusmsg" style="color:red">Statusmessage</h3>
          </div>
       </div>
       <header>
@@ -212,6 +212,7 @@
       </header>
       <div class="container">
          <!--                              README                  -->
+         <p><b>Service Status:<span id="statuscode"></span></b></p>
          <p>Generate Ardupilot mission files and auxiliary files (Stats file and export files).
             The output mission file contains WP&#39;s set to &#39;ABSOLUTE&#39; heights for better mission previsibility and can be imported directly in Mission Planner.
          </p>
@@ -339,4 +340,23 @@
         disablewait();
         document.querySelector('#proc-btn').disabled = true;
    </script>
+<script>
+var xhr = new XMLHttpRequest();
+getcall = terraclipserver + "/checkonline"
+console.log(getcall)
+xhr.open('GET', getcall, true);
+xhr.onload = function () {
+  if (xhr.status >= 200 && xhr.status < 300) {
+   document.getElementById("statuscode").style.color = 'green';
+   document.getElementById("statuscode").innerHTML = "ONLINE";
+  } else {
+    document.getElementById("statuscode").style.color = 'red';
+    document.getElementById("statuscode").innerHTML = "OFFLINE";
+  }
+};
+xhr.onerror = function () {
+console.error('Request failed');
+};
+xhr.send();
+</script>
 </html>
